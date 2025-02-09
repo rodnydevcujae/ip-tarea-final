@@ -1,4 +1,4 @@
-name: QT-Console
+name: Qt5 CI
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: install qt make
       run: sudo apt update && sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake
-    - name: create make file
+    - name: create make file and compile
       run: cd src && qmake && make
     
       

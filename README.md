@@ -1,6 +1,7 @@
 # Tarea Final IP
+[![Qt5 CI](https://github.com/rodnydevcujae/ip-tarea-final/actions/workflows/qmake.yml/badge.svg)](https://github.com/rodnydevcujae/ip-tarea-final/actions/workflows/qmake.yml)
 
-Repositorio que aloja mi solución de la Tarea Final de [Introducción a la Programación](https://moodle.cujae.edu.cu/course/info.php?id=895) del curso 2024-2025 en la [CUJAE](https://cujae.edu.cu)
+Pequeño repositorio que aloja mi solución de la Tarea Final de [Introducción a la Programación](https://moodle.cujae.edu.cu/course/info.php?id=895) del curso 2024-2025 en la [CUJAE](https://cujae.edu.cu)
 
 ## Enunciado de la Tarea 
 Tema #13
