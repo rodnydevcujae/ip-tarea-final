@@ -3,10 +3,10 @@
 
 #include <stdbool.h>
 
+#define SELECT_S 100
 #define PLAYERS_S 100
 #define NAME_S 50
 #define SPORT_S 30
-#define RESPONSIBLE_S 50
 
 // Estructura para un participante
 typedef struct {
@@ -19,9 +19,10 @@ typedef struct {
 
 // Estructura para un año de los Juegos Interaños
 typedef struct {
-  char responsible[RESPONSIBLE_S];  // responsable de la FEU
-  Player players[PLAYERS_S];        // participantes
-  int playersLen;                   // cantidad de participantes
+  char nickname[NAME_S];     // seudonimo para el año
+  char responsible[NAME_S];  // responsable de la FEU
+  int playersLen;            // cantidad de participantes
+  Player players[PLAYERS_S]; // participantes
 } InterYearTeam;
 
 #endif
