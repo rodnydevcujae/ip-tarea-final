@@ -5,17 +5,10 @@
 
 int main() {
   InterYearTeam teams[5];
-  char sports[][SPORT_S] = {
-    "fútbol",
-    "baloncesto",
-    "voleibol",
-    "béisbol",
-    "dominó",
-    "ajedrez"
-  };
   
   clearTeams(teams);
   displayAppInfo();
+  printSep();
   displayMainMenu(teams);
   return 0;
 }
