@@ -16,44 +16,39 @@ void displayReportsMenu (InterYearTeam teams[5]) {
   };
 
   if (hasPlayers(teams)) {
-    printSep();
     printInfo("< Menú de Reportes >");
     choice = requestSelect("", menuSelect, 6);
 
+    clearLogs();
+    printIntro("");
     switch (choice) {
       case 1:
-        printSep();
         displayReportA(teams);
         displayReportsMenu(teams);
         break;
       
       case 2:
-        printSep();
         displayReportB(teams);
         displayReportsMenu(teams);
         break;
       
       case 3:
-        printSep();
         displayReportC(teams);
         displayReportsMenu(teams);
         break;
       
       case 4:
-        printSep();
         displayReportD(teams);
         displayReportsMenu(teams);
         break;
       
       case 5:
-        printSep();
         displayReportE(teams);
         displayReportsMenu(teams);
         break;
 
       case 6:
-        printSep();
-        displayMainMenu(teams);
+        // main menu
         break;
     }
   }
@@ -61,7 +56,6 @@ void displayReportsMenu (InterYearTeam teams[5]) {
     printlError("No puede acceder al menú de reportes.");
     printlLog("Los datos están vacíos, introduzca al menos uno.");
     printSep();
-    displayMainMenu(teams);
   }
 }
 
@@ -77,14 +71,14 @@ void displayReportA (InterYearTeam teams[5]) {
     "... Atrás"
   };
   
-  // obtener mejores equipos
+  // obtener mejores años
   indicesLen = getBestMedals(teams, indices);
   
   if (indicesLen == 1) {
-    printInfo("Equipo con mayor cantidad de medallas.");
+    printInfo("Año con mayor cantidad de medallas.");
   } 
   else {
-    printInfo("Equipos con mayor cantidad de medallas.");
+    printInfo("Años con mayor cantidad de medallas.");
   }
   
   for(i = 0; i < indicesLen; i++) {
@@ -93,6 +87,8 @@ void displayReportA (InterYearTeam teams[5]) {
 
   printLog("");
   requestSelect("", menuSelect, 1);
+  clearLogs();
+  printIntro("");
 }
 
 /**
@@ -105,7 +101,7 @@ void displayReportB (InterYearTeam teams[5]) {
     "... Atrás"
   };
   
-  printlInfo("Información de los equipos");
+  printlInfo("Información de los años");
   
   for(i = 0; i < 5; i++) {
     printTeam(teams[i]);
@@ -113,6 +109,8 @@ void displayReportB (InterYearTeam teams[5]) {
   }
 
   requestSelect("", menuSelect, 1);
+  clearLogs();
+  printIntro("");
 }
 
 /**
@@ -120,7 +118,7 @@ void displayReportB (InterYearTeam teams[5]) {
  */
 void displayReportC (InterYearTeam teams[5]) {
   int i;
-  char temp[100];
+  char temp[200];
 
   char menuSelect[1][SELECT_S] = {
     "... Atrás"
@@ -137,6 +135,8 @@ void displayReportC (InterYearTeam teams[5]) {
 
   printSep();
   requestSelect("", menuSelect, 1);
+  clearLogs();
+  printIntro("");
 }
 
 
@@ -148,23 +148,24 @@ void displayReportD (InterYearTeam teams[5]) {
   int femCounters[5];
   int indicesLen;
   int i;
-  char temp[100];
+  char temp[200];
 
   char menuSelect[1][SELECT_S] = {
     "... Atrás"
   };
   
-  // obtener equipos con más participación femenina que masculina
+  // obtener años con más participación femenina que masculina
   indicesLen = getMajorFemSex(teams, indices, femCounters);
   
   switch (indicesLen) {
     case 0:
-      printf("No hay equipos donde la participación femenina supera la masculina.");
+      printError("No hay años donde la participación femenina supera la masculina.");
+      break;
     case 1:
-      printInfo("Equipo donde la participación femenina supera la masculina:");
+      printInfo("Año donde la participación femenina supera la masculina:");
       break;
     default:
-      printInfo("Equipos donde la participación femenina supera la masculina:");
+      printInfo("Años donde la participación femenina supera la masculina:");
   } 
   
   for(i = 0; i < indicesLen; i++) {
@@ -185,6 +186,8 @@ void displayReportD (InterYearTeam teams[5]) {
   }
 
   requestSelect("", menuSelect, 1);
+  clearLogs();
+  printIntro("");
 }
 
 /**
@@ -197,7 +200,7 @@ void displayReportE (InterYearTeam teams[5]) {
   int teamIndex;
   char sport[SPORT_S];
   int i;
-  char temp[100];
+  char temp[200];
 
   char teamSelect[6][SELECT_S];
   char menuSelect[1][SELECT_S] = {
@@ -210,28 +213,26 @@ void displayReportE (InterYearTeam teams[5]) {
   if (choice < 6) {
     teamIndex = choice - 1;
     printlLog("");
-    requestSportSelect("Deporte a obtener.", sport);
-
-    indicesLen = getPlayers(teams[teamIndex], sport, indices);
-    printSep();
-
-    switch (indicesLen) {
-      case 0:
-        sprintf(temp, "No hay participantes en %s en el deporte %s", teams[teamIndex].nickname, sport);
-        printInfo(temp);
-        break;
-      default:
-        printlInfo("Participantes");
-        sprintf(temp, "Equipo: %s", teams[teamIndex].nickname);
-        printLog(temp);
-        for(i = 0; i < indicesLen; i++) {
-          printPlayer(teams[teamIndex].players[indices[i]]);
-          printlLog("");
-        }
-        break;
-    } 
-    
+    if (!requestSportSelect("Deporte a obtener.", sport)) {
+      indicesLen = getPlayers(teams[teamIndex], sport, indices);
+      printSep();
+      
+      switch (indicesLen) {
+        case 0:
+          sprintf(temp, "No hay participantes en %s en el deporte %s", teams[teamIndex].nickname, sport);
+          printInfo(temp);
+          break;
+        default:
+          printlInfo("Participantes");
+          printLog(teams[teamIndex].nickname);
+          for(i = 0; i < indicesLen; i++) {
+            printPlayer(teams[teamIndex].players[indices[i]]);
+            printlLog("");
+          }
+      } 
+      requestSelect("", menuSelect, 1);
+    }    
   }
-  
-  requestSelect("", menuSelect, 1);
+  clearLogs();
+  printIntro("");
 }

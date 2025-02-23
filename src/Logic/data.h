@@ -17,7 +17,7 @@ typedef struct {
 } Player;
 
 
-// Estructura para un año de los Juegos Interaños
+// Estructura para un año (equipo) de los Juegos Interaños
 typedef struct {
   char nickname[NAME_S];     // seudonimo para el año
   char responsible[NAME_S];  // responsable de la FEU

@@ -6,63 +6,56 @@
  */
 void displayInsertMenu (InterYearTeam teams[5], int teamId) {
   int choice;
-  int i;
-  char temp[100];
+  char temp[200];
   char teamSelect[6][SELECT_S]; // los 5 años + opción menu principal = 6
-  char menuSelect[5][SELECT_S] = {
+  char menuSelect[4][SELECT_S] = {
     "(+) Añadir participante",
     "(-) Eliminar participante",
     "(*) Editar representante de la FEU",
-    "... Seleccionar otro año",
-    "... Menú Principal",
+    "... Atrás"
   };
   
   printlInfo("< Menú Introducir datos >");
   // si ya se seleccionó un año
-  if (teamId) {
-    i = teamId - 1;
+  if (teamId > -1) {
     
     // mostrar información parcial del año
-    sprintf(temp, "%s", teams[i].nickname);
+    sprintf(temp, "%s", teams[teamId].nickname);
     printlLog(temp);
 
-    sprintf(temp, "Participantes: %d", teams[i].playersLen);
+    sprintf(temp, "Participantes: %d", teams[teamId].playersLen);
     printlLog(temp);
     
     sprintf(temp, "FEU: %s", 
-      strlen(teams[i].responsible) > 0 ?
-        teams[i].responsible : "(no asignado)" 
+      strlen(teams[teamId].responsible) > 0 ?
+        teams[teamId].responsible : "(no asignado)" 
     );
     printLog(temp);
     
     // menu
-    choice = requestSelect("", menuSelect, 5);
-    printSep();
+    choice = requestSelect("", menuSelect, 4);
+    
+    clearLogs();
+    printIntro("");
+
     switch (choice) {
       case 1:
-        displayAddPlayer(&teams[i]);
-        printSep();
+        displayAddPlayer(teams, teamId);
         displayInsertMenu(teams, teamId);
         break;
       
       case 2:
-        displayRemovePlayer(&teams[i]);
-        printSep();
+        displayRemovePlayer(&teams[teamId]);
         displayInsertMenu(teams, teamId);
         break;
       
       case 3:
-        displayEditResponsible(&teams[i]);
-        printSep();
+        displayEditResponsible(teams, teamId);
         displayInsertMenu(teams, teamId);
         break;
         
       case 4:
-        displayInsertMenu(teams, 0);
-        break;
-
-      case 5:
-        displayMainMenu(teams);
+        displayInsertMenu(teams, -1);
         break;
     }
   }
@@ -74,12 +67,11 @@ void displayInsertMenu (InterYearTeam teams[5], int teamId) {
     strcpy(teamSelect[5], "... Menú principal");
 
     choice = requestSelect("Dónde desea modificar los datos?", teamSelect, 6);
-    printSep();
-    if (choice == 6) {
-      displayMainMenu(teams);
-    }
-    else {
-      displayInsertMenu(teams, choice);
+
+    clearLogs();
+    printIntro("");
+    if (choice < 6) {
+      displayInsertMenu(teams, choice - 1);
     }
   }
   
@@ -88,55 +80,89 @@ void displayInsertMenu (InterYearTeam teams[5], int teamId) {
 /**
  * Introducir datos/Opción 1
  */
-void displayAddPlayer (InterYearTeam *team) {
+void displayAddPlayer (InterYearTeam teams[5], int teamId) {
   Player player;
-  char temp[100];
+  char temp[200];
+  int choice;
+  bool userCancel = false;
 
   // arreglos de menus
-  char sexMenu[2][SELECT_S] = {
+  char sexMenu[3][SELECT_S] = {
     "Masculino",
-    "Femenino"
+    "Femenino",
+    "... Cancelar"
   };
-  char medalMenu[2][SELECT_S] = {
+  char medalMenu[3][SELECT_S] = {
     "(+) Es medallista",
-    "(-) No ha ganado una medalla"
+    "(-) No ha ganado una medalla",
+    "... Cancelar"
+  };
+  char confirmMenu[2][SELECT_S] = {
+    "Añadir",
+    "Cancelar"
   };
   
   printInfo("< Añadir participante >");
   
   // Caben más participantes?
-  if (team->playersLen < PLAYERS_S) {
+  if (teams[teamId].playersLen < PLAYERS_S) {
 
     // pedir nombre
-    requestName("Ingrese el nombre", player.name);
+    userCancel = requestName("Ingrese el nombre del participante (0 para cancelar)", player.name, teams, 1);
     
-    // pedir genero
-    if (requestSelect("", sexMenu, 2) == 1) {
-      player.sex = 'M';
-    }
-    else {
-      player.sex = 'F';
-    }
-    
-    // pedir deporte
-    printlLog("");
-    requestSportSelect("En que deporte participó?", player.sport);
-    
-    // es medallista?
-    printlLog("");
-    player.hasMedal = requestSelect("", medalMenu, 2) == 1;
+    if (!userCancel) {
 
-    // añadir a los datos
-    team->players[team->playersLen++] = player;
+      //  pedir genero
+      printlLog("");
+      choice = requestSelect("", sexMenu, 3);
+      userCancel = choice == 3;
+      
+      if (!userCancel) {
+        player.sex = choice == 1 ? 'M' : 'F';
     
-    printlLog("");
-    printlInfo("Participante añadido exitosamente!");
-    printPlayer(player);
+        // pedir deporte
+        printlLog("");
+        userCancel = requestSportSelect("En que deporte participó?", player.sport);
+        
+        if (!userCancel) {
+          // es medallista?
+          printlLog("");
+          choice = requestSelect("", medalMenu, 3);
+          userCancel = choice == 3;
+          
+          if (!userCancel) {
+            
+            clearLogs();
+            printIntro("");
+            printlInfo("Participante creado.");
+            printPlayer(player);
+            printlLog("");
+            userCancel = requestSelect("", confirmMenu, 2) == 2;
+            
+            // añadir a los datos
+            if (!userCancel) {
+              addPlayer(&teams[teamId], player);
+              clearLogs();
+              printIntro("");
+              printlInfo("Participante añadido exitosamente!");
+              printSep();
+            } 
+          }
+
+        }
+      }
+    }
   }
-
   else {
     sprintf(temp, "Ups!!! Ya se alcanzó el máximo de participantes en este año (%d)", PLAYERS_S);
     printError(temp);
+  }
+
+  if (userCancel) {
+    clearLogs();
+    printIntro("");
+    printInfo("Operación cancelada");
+    printSep();
   }
 }
 
@@ -152,38 +178,48 @@ void displayRemovePlayer (InterYearTeam *team) {
 
 
   for (i = 0; i < len; i++) {
-    sprintf(temp, "%s[X]%s %s %s[%s%s%s]%s", RED, RESET, team->players[i].name, CYAN, RESET, team->players[i].sport, CYAN, RESET);
+    sprintf(temp, RED "[X]" RESET " %s " CYAN "[%s]" RESET, team->players[i].name, team->players[i].sport);
     strcpy(playersMenu[i], temp);
   }
 
   strcpy(playersMenu[len++], "... Atrás");
   choice = requestSelect("Seleccione el participante que quiere eliminar", playersMenu, len);
 
+  clearLogs();
   if (choice < len) {
+    removePlayer(team, choice - 1);
+    printIntro("");
     sprintf(temp, "Participante [%s] eliminado exitosamente", team->players[choice - 1].name);
-    team->playersLen--;
-    for (i = choice - 1; i < team->playersLen; i++) {
-      team->players[i] = team->players[i + 1];
-    }
     printInfo(temp);
+    printSep();
+  }
+  else {
+    printIntro("");
   }
 }
 
 /**
  * Introducir datos/Opción 3
  */
-void displayEditResponsible (InterYearTeam *team) {
-  int i;
-  char temp[100];
+void displayEditResponsible (InterYearTeam teams[5], int teamId) {
+  char temp[200];
+  bool userCancel = false;
 
-  if (strlen(team->responsible) > 0) {
-    sprintf(temp, "%sActual:%s %s", CYAN, RESET, team->responsible);
+  if (strlen(teams[teamId].responsible) > 0) {
+    sprintf(temp, CYAN "Actual:" RESET " %s", teams[teamId].responsible);
     printlInfo(temp);
   }
-  requestName("Ingrese el nuevo nombre para el responsable de la FEU", team->responsible);
+  userCancel = requestName("Ingrese el nuevo nombre para el responsable de la FEU (0 para regresar)", teams[teamId].responsible, teams, 2);
+  
+  clearLogs();
+  if (!userCancel) {
+    sprintf(temp, "FEU %s", teams[teamId].nickname);
+    printlInfo(temp);
+    printLog(teams[teamId].responsible);
+    printOutro("");
+    printf("\n");
+  }
 
-  sprintf(temp, "FEU %s", team->nickname);
-  printlInfo(temp);
-  printLog(team->responsible);
+  printIntro("");
 }
 

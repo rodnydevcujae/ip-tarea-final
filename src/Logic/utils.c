@@ -63,7 +63,8 @@ int isName(char *str) {
 /**
  * Recortar espacios extras
  */
-void trimStr (char *str, char *newStr) {
+void trimStr (char *str) {
+  char newStr[200] = "";
   bool inSpace = false;
   bool inStart = false;
   int i;
@@ -88,6 +89,7 @@ void trimStr (char *str, char *newStr) {
   }
 
   newStr[newLen] = '\0';
+  strcpy(str, newStr);
 }
 
 /**

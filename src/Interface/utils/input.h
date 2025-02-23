@@ -10,8 +10,8 @@
 #include "colors.h"
 
 bool getInput(char input[], int maxbuffer);
-int requestSelect(char *message, char options[][SELECT_S], int len);
-void requestName(const char *message, char name[NAME_S]);
-void requestSportSelect (const char *message, char sport[SPORT_S]);
+int requestSelect (const char *message, char options[][SELECT_S], int len);
+bool requestName (const char *message, char name[NAME_S], InterYearTeam teams[5], int opt);
+bool requestSportSelect (const char *message, char sport[SPORT_S]);
 
 #endif

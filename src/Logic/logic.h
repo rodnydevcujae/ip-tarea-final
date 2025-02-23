@@ -12,3 +12,5 @@ int getBestMedals (InterYearTeam teams[5], int indices[5]);
 int getMajorFemSex (InterYearTeam teams[5], int indices[5], int femCounters[5]);
 int getPlayers (InterYearTeam team, char sport[SPORT_S], int indices[]);
 int createTeamSelect(InterYearTeam teams[5], char options[][SELECT_S]);
+void removePlayer(InterYearTeam *team, int playerId);
+void addPlayer(InterYearTeam *team, Player player);

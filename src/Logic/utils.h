@@ -4,5 +4,5 @@
 
 bool isInt(char*);
 int isName(char*);
-void trimStr(char*, char*);
+void trimStr(char*);
 void parseName(char *str);

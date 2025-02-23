@@ -7,8 +7,8 @@
 #include "Logic/logic.h"
 
 void displayInsertMenu(InterYearTeam[5], int);
-void displayAddPlayer(InterYearTeam*);
+void displayAddPlayer(InterYearTeam[5], int);
 void displayRemovePlayer (InterYearTeam*);
-void displayEditResponsible (InterYearTeam*);
+void displayEditResponsible (InterYearTeam[5], int);
 
 #endif

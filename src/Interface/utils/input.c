@@ -31,7 +31,7 @@ bool getInput (char input[], int maxbuffer) {
  * @param options - arreglo de strings
  * @param len - tamaño 
  */
-int requestSelect (char *message, char options[][SELECT_S], int len) {
+int requestSelect (const char *message, char options[][SELECT_S], int len) {
   int i;
   bool valid = true;
   char temp[200] = "";
@@ -67,61 +67,116 @@ int requestSelect (char *message, char options[][SELECT_S], int len) {
  * Solicitar nombre
  * @param message - mensaje de la solicitud
  * @param name - almacenar entrada del usuario
+ * @param teams - los años a verificar
+ * @param opt - 1 para comparar con todos los participantes, 2 con los de la FEU
  */
-void requestName (const char *message, char name[NAME_S]) {
-  int i;
+bool requestName (const char *message, char name[NAME_S], InterYearTeam teams[5], int opt) {
+  int i, j;
   bool valid = true;
+  bool userCancel = false;
   int flag;
-  char temp[100] = "";
+  char temp[200] = "";
 
   do {
-    printf(" %s%s%s %s\n", GREEN, IMG6, RESET, message);
-    printf(" %s %s%s:%s ", IMG1, GREEN, IMG7, RESET);
+    printf(" " GREEN IMG6 RESET " %s\n", message);
+    printf(" " IMG1 " " GREEN IMG7 ":" RESET " ");
 
     valid = getInput(temp, NAME_S - 2);
     if (valid) {
-      trimStr(temp, name);
-      flag = isName(name);
-      valid = !flag;
-
-      switch (flag) {
-        case 1:
-          printError("Error. Verifique que su entrada solo contenga letras.");
-          break;
-        case 2:
-          printError("Error. Más de un apellido no está soportado.");
-          break;
-        case 3:
-          printError("Error. Asegúrese que el nombre tenga 3 o más letras.");
-          break;
+      // cancelar operación
+      if (strcmp(temp, "0") == 0) userCancel = true;
+      else {
+        trimStr(temp);
+        flag = isName(temp);
+        valid = !flag;
+  
+        if (valid) {
+          // acomodar el nombre
+          parseName(temp);
+  
+          // verificar si ya existe
+          if (opt == 1) {
+            i = 0;
+            while (valid && i < 5) {
+              j = 0;
+              while(valid && j < teams[i].playersLen) {
+                if (strcmp(temp, teams[i].players[j].name) == 0) {
+                  valid = false;
+                }
+                else j++;
+              }
+              if (valid) i++;
+            }
+  
+            if (!valid) {
+              sprintf(temp, "Error! Nombre duplicado. Ese participante ya existe en %s", teams[i].nickname);
+              printError(temp);
+            }
+          }
+          else if (opt == 2){
+            i = 0;
+            while (valid && i < 5) {
+              if (strcmp(temp, teams[i].responsible) == 0) {
+                valid = false;
+              }
+              if (valid) i++;
+            }
+            if (!valid) {
+              sprintf(temp, "Error! Nombre duplicado. Ese nombre forma parte de la FEU de %s", teams[i].nickname);
+              printError(temp);
+            }
+          }
+          
+          if (valid) strcpy(name, temp);
+        }
+        else {
+          switch (flag) {
+            case 1:
+              printError("Error. Verifique que su entrada solo contenga letras.");
+              break;
+            case 2:
+              printError("Error. Más de un apellido no está soportado.");
+              break;
+            case 3:
+              printError("Error. Asegúrese que el nombre tenga 3 o más letras.");
+              break;
+          }
+        }
       }
     }
     else {
-      sprintf(temp, "%sError, entrada muy extensa.%s Su entrada no debe de superar las %d letras.", RED, RESET, NAME_S - 2);
+      sprintf(temp, RED "Error, entrada muy extensa." RESET " Su entrada no debe de superar las %d letras.", NAME_S - 2);
       printError(temp);
     }
   } while (!valid);
 
-  // acomodar el nombre
-  parseName(name);
+  return userCancel;
 }
 
 /**
  * Solicitar un deporte
  * @param message - mensaje de la solicitud
  * @param name - almacenar entrada del usuario
+ * @return - verdadero si el usuario canceló la operación
  */
-void requestSportSelect (const char *message, char sport[SPORT_S]) {
+bool requestSportSelect (const char *message, char sport[SPORT_S]) {
   int sportId;
-  char sportMenu[6][SELECT_S] = {
+  bool userCancel = false;
+  char sportMenu[7][SELECT_S] = {
     "Fútbol",
     "Baloncesto",
     "Voleibol",
     "Béisbol",
     "Dominó",
-    "Ajedrez"
+    "Ajedrez",
+    "... Cancelar"
   };
   
-  sportId = requestSelect(message, sportMenu, 6);
-  strcpy(sport, sportMenu[sportId - 1]);
+  sportId = requestSelect(message, sportMenu, 7);
+  userCancel = sportId == 7;
+
+  if (!userCancel) {
+    strcpy(sport, sportMenu[sportId - 1]);
+  }
+  return userCancel;
 }

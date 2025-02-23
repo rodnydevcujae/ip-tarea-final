@@ -24,27 +24,29 @@ void displayMainMenu (InterYearTeam teams[5]) {
   
   printInfo("< Menú Principal >");
   choice = requestSelect("", menuSelect, 4);
+  
+  clearLogs();
+  printIntro("");
+
   switch (choice) {
     case 1:
-      printSep();
-      displayInsertMenu(teams, 0);
-      break;
-    case 2:
-      printSep();
-      displayAutoMenu(teams, false);
-      printSep();
+      displayInsertMenu(teams, -1);
       displayMainMenu(teams);
       break;
-    case 3:
+    case 2:
+      displayAutoMenu(teams, false);
+      displayMainMenu(teams);
+      break;
+      case 3:
       displayReportsMenu(teams);
-      printSep();
+      displayMainMenu(teams);
       break;
     case 4:
       printSep();
       displayAppInfo();
       printSep();
       printlInfo("Saliendo del programa...");
-      printOutro("\n");
+      printOutro("");
       break;
   }
 }

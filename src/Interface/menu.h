@@ -3,6 +3,7 @@
 #define MENU_H
 
 
+#include "menus/autoMenu.h"
 #include "menus/reportMenu.h"
 #include "menus/insertMenu.h"
 

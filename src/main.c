@@ -5,7 +5,7 @@
 
 int main() {
   InterYearTeam teams[5];
-  
+
   clearTeams(teams);
   displayAppInfo();
   printSep();
