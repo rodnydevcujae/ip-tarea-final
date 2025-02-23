@@ -6,6 +6,7 @@
 #include "colors.h"
 #include "Logic/logic.h"
 
+void clearLogs();
 void printIntro(char *message);
 void printLog(char *message);
 void printlLog(char *message);
